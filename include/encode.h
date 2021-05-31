@@ -1,3 +1,5 @@
+#include "tree.h"
+
 // Constants
 #define ENCODE_SUCCESS 1
 #define ENCODE_FAILURE -1

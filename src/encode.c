@@ -1,6 +1,5 @@
 #include "header.h"
 #include "encode.h"
-#include "tree.h"
 
 // Counts the occurence of each char from an input file
 long int countChars(char* filename, int* asciiCount) {
@@ -41,8 +40,40 @@ int compress(char* input, char* output) {
         return ENCODE_FAILURE;
     }
 
+    root = createTree(uniqueChars, asciiCount);
 
     return ENCODE_SUCCESS;
 }
 
-Node* createTree()
+// Returns tree root
+Node* createTree(long int uniqueChars, int* asciiCount) {
+    int i = 0;
+    int j = 0;
+
+    Node* arr = malloc(uniqueChars * sizeof(Node));
+    if (arr == NULL) {
+        printf("Error: malloc returns NULL in createTree.\n");
+        return NULL;
+    }
+
+    for (i = 0; i < ASCII_SIZE; i++) {
+        if (asciiCount[i] != 0) {
+            arr[j].c = i;
+            arr[j].weight = asciiCount[i];
+            arr[j].left = NULL;
+            arr[j].right = NULL;
+            j++;
+        }
+    }
+
+    sortTreeArray(arr, uniqueChars);
+
+    
+
+    //printArr(arr, uniqueChars);
+
+    free(arr);
+
+
+    return NULL;
+}
