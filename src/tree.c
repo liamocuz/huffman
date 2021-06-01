@@ -38,55 +38,27 @@ Node* joinNodes(Node* a, Node* b) {
 }
 
 List* buildTreeFromList(List* head) {
-    List* temp = head;
-    List* runner = head;
+    List* curr = head;
     List* newHead = head;
-    List* toPlace = NULL;
-
-    unsigned char end = 1;
 
     while (newHead->next) {
-        toPlace = (List*)malloc(sizeof(List));
-        toPlace->node = joinNodes(temp->node, temp->next->node);
-        toPlace->next = NULL;
+        curr->next->node = joinNodes(curr->node, curr->next->node);
+        newHead = curr->next;
+        free(curr);
+        curr = newHead;
 
-        if (temp->next->next) {
-            newHead = temp->next->next;
-        }
-        else {
-            newHead = toPlace;
-            end = 0;
+        while (curr->next && (curr->node->weight >= curr->next->node->weight)) {
+            swap(curr->node, curr->next->node);
+            curr = curr->next;
         }
 
-        free(temp);
-        free(temp->next);
+        curr = newHead;
 
-        runner = newHead;
-        while (runner->next && (runner->next->node->weight <= toPlace->node->weight)) {
-            runner = runner->next;
-        }
-
-        if (runner == newHead && end) {
-            newHead = toPlace;
-            toPlace->next = runner;
-        }
-        else {
-            insertListAfter(runner, toPlace);
-        }
-
-        temp = newHead;
-
+        // DEBUG
         printArr(newHead);
     }
 
-
     return newHead;
-}
-
-void insertListAfter(List* after, List* toInsert) {
-    List* temp = after->next;
-    after->next = toInsert;
-    toInsert->next = temp;
 }
 
 void printArr(List* head) {
