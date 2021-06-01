@@ -50,3 +50,31 @@ void freeArr(List* head) {
         temp = next;
     }
 }
+
+Node* joinNodes(Node* a, Node* b) {
+    Node* new = (Node*)malloc(sizeof(Node));
+    new->c = -1;
+    new->weight = a->weight + b->weight;
+    new->left = a;
+    new->right = b;
+    return new;
+}
+
+void freeTree(Node* node) {
+    if (node == NULL)
+		return;
+
+	freeTree(node->left);
+	freeTree(node->right);
+
+	free(node);
+}
+
+void preOrderPrint(Node* node)
+{
+	if (node == NULL)
+		return;
+	printf("%c\n", node->c);
+	preOrderPrint(node->left);
+	preOrderPrint(node->right);
+}

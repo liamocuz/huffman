@@ -16,3 +16,6 @@ void sortTreeArray(List* head);
 void swap(Node* a, Node* b);
 void printArr(List* head);
 void freeArr(List* head);
+Node* joinNodes(Node* a, Node* b);
+void freeTree(Node* root);
+void preOrderPrint(Node* root);

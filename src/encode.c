@@ -83,9 +83,21 @@ Node* createTree(long int uniqueChars, int* asciiCount) {
         }
     }
 
-    sortTreeArray(head);
-    
-    printArr(head);
+    ltemp = head;
+    while (ltemp->next) {
+        ltemp->next->node = joinNodes(ltemp->node, ltemp->next->node);
+        free(head);
+        head = ltemp->next;
+        ltemp = head;
+
+        sortTreeArray(head);
+        printArr(head);
+        printf("\n");
+    }
+
+    // preOrderPrint(head->node);
+
+    freeTree(head->node);
 
     freeArr(head);
 

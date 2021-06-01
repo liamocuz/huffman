@@ -22,6 +22,9 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 run:
 	./$(EXE) 0 tests/gophers.txt output/gophers_out.txt
 
+leaks:
+	leaks -atExit -- ./$(EXE) 0 tests/gophers.txt output/gophers_out.txt
+
 clean:
 	cd build; rm *.o; rm *.d;
 	rm $(EXE)
