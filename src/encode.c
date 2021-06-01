@@ -24,11 +24,12 @@ long int countChars(char* filename, int* asciiCount) {
     // }
     // printf("unique: %ld\n", uniqueChars);
 
+    fclose(fptr);
+
     return uniqueChars;
 }
 
 int compress(char* input, char* output) {
-    
     long int uniqueChars = 0;
     int asciiCount[ASCII_SIZE];
     Node* root = NULL;
@@ -83,24 +84,17 @@ Node* createTree(long int uniqueChars, int* asciiCount) {
         }
     }
 
-    ltemp = head;
-    while (ltemp->next) {
-        ltemp->next->node = joinNodes(ltemp->node, ltemp->next->node);
-        free(head);
-        head = ltemp->next;
-        ltemp = head;
+    sortTreeArray(head);
 
-        sortTreeArray(head);
-        printArr(head);
-        printf("\n");
-    }
+    printArr(head);
 
-    // preOrderPrint(head->node);
+    head = buildTreeFromList(head);
+
+    preOrderPrint(head->node);
 
     freeTree(head->node);
 
-    freeArr(head);
-
+    free(head);
 
     return NULL;
 }

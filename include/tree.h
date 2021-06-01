@@ -19,3 +19,5 @@ void freeArr(List* head);
 Node* joinNodes(Node* a, Node* b);
 void freeTree(Node* root);
 void preOrderPrint(Node* root);
+List* buildTreeFromList(List* head);
+void insertListAfter(List* after, List* toInsert);
