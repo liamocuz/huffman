@@ -1,25 +1,27 @@
 #include "tree.h"
 #include "header.h"
 
-// Sort the array using selection sort
-void sortTreeArray(Node* arr, int size) {
-    int i =0;
-    int j = 0;
-    int mindex = 0;
+// // Sort the linked list using selection sort
+void sortTreeArray(List* head) {
+    List* i = head;
+    List* j = NULL;
+    List* min = NULL;
 
-    for (i = 0; i < size - 1; i++) {
-        mindex = i;
-        for (j = i + 1; j < size; j++) {
-            if (arr[j].weight < arr[mindex].weight) {
-                mindex = j;
+    while (i) {
+        min = i;
+        j = i->next;
+        while (j) {
+            if (j->node->weight < min->node->weight) {
+                min = j;
             }
-            else if (arr[j].c == -1 && arr[mindex].c != -1) {
-                mindex = j;
+            else if (j->node->c == -1 && min->node->c != -1) {
+                min = j;
             }
+            j = j->next;
         }
-
-        swap(&arr[mindex], &arr[i]);
-    }    
+        swap(min->node, i->node);
+        i = i->next;
+    }
 }
 
 void swap(Node* a, Node* b)  
@@ -29,8 +31,22 @@ void swap(Node* a, Node* b)
     *b = temp;  
 }
 
-void printArr(Node* arr, int size) {
-    for (int i = 0; i < size; i++) {
-        printf("char: %c, weight: %d\n", arr[i].c, arr[i].weight);
+void printArr(List* head) {
+    List* runner = head;
+    while (runner) {
+        printf("char: %c, weight: %d\n", runner->node->c, runner->node->weight);
+        runner = runner->next;
+    }
+}
+
+void freeArr(List* head) {
+    List* temp = head;
+    List* next = NULL;
+
+    while(temp) {
+        next = temp->next;
+        free(temp->node);
+        free(temp);
+        temp = next;
     }
 }

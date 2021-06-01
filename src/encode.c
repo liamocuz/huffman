@@ -48,31 +48,46 @@ int compress(char* input, char* output) {
 // Returns tree root
 Node* createTree(long int uniqueChars, int* asciiCount) {
     int i = 0;
-    int j = 0;
-
-    Node* arr = malloc(uniqueChars * sizeof(Node));
-    if (arr == NULL) {
-        printf("Error: malloc returns NULL in createTree.\n");
-        return NULL;
-    }
+    List* head = NULL;
+    List* ltemp = NULL;
+    Node* ntemp = NULL;
 
     for (i = 0; i < ASCII_SIZE; i++) {
         if (asciiCount[i] != 0) {
-            arr[j].c = i;
-            arr[j].weight = asciiCount[i];
-            arr[j].left = NULL;
-            arr[j].right = NULL;
-            j++;
+            if (head == NULL) {
+                head = (List*)malloc(sizeof(List));
+
+                ntemp = (Node*)malloc(sizeof(Node));
+                ntemp->c =(char)i;
+                ntemp-> weight = asciiCount[i];
+                ntemp->left = NULL;
+                ntemp->right = NULL;
+
+                ltemp = head;
+                ltemp->node = ntemp;
+                ltemp->next = NULL;
+            }
+            else {
+                ltemp->next = (List*)malloc(sizeof(List));
+                ltemp = ltemp->next;
+
+                ntemp = (Node*)malloc(sizeof(Node));
+                ntemp->c = (char)i;
+                ntemp-> weight = asciiCount[i];
+                ntemp->left = NULL;
+                ntemp->right = NULL;
+
+                ltemp->node = ntemp;
+                ltemp->next = NULL;
+            }
         }
     }
 
-    sortTreeArray(arr, uniqueChars);
-
+    sortTreeArray(head);
     
+    printArr(head);
 
-    //printArr(arr, uniqueChars);
-
-    free(arr);
+    freeArr(head);
 
 
     return NULL;
