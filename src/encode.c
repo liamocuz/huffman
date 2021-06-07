@@ -52,6 +52,7 @@ Node* createTree(long int uniqueChars, int* asciiCount) {
     List* head = NULL;
     List* ltemp = NULL;
     Node* ntemp = NULL;
+    Node* root = NULL;
 
     for (i = 0; i < ASCII_SIZE; i++) {
         if (asciiCount[i] != 0) {
@@ -89,12 +90,13 @@ Node* createTree(long int uniqueChars, int* asciiCount) {
     printArr(head);
 
     head = buildTreeFromList(head);
-
-    preOrderPrint(head->node);
-
-    freeTree(head->node);
-
+    root = head->node;
     free(head);
+
+    preOrderPrint(root);
+
+    freeTree(root);
+
 
     return NULL;
 }
