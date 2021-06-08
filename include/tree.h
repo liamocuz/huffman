@@ -18,5 +18,7 @@ void printArr(List* head);
 void freeArr(List* head);
 Node* joinNodes(Node* a, Node* b);
 void freeTree(Node* root);
-void preOrderPrint(Node* root);
+void preOrderPrint(Node* node);
+void preOrderTraversal(Node* node, char* encoding);
 List* buildTreeFromList(List* head);
+int buildTableFromTree(Node* root, char** table);

@@ -10,3 +10,6 @@ typedef struct Header {
     long int numUniqueChars;
     long int numCharsUncomp;
 } Header;
+
+// Constants
+#define ASCII_SIZE 128

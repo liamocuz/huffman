@@ -1,7 +1,7 @@
 #include "tree.h"
 #include "header.h"
 
-// // Sort the linked list using selection sort
+// Sort the linked list using selection sort
 void sortTreeArray(List* head) {
     List* i = head;
     List* j = NULL;
@@ -55,7 +55,7 @@ List* buildTreeFromList(List* head) {
         curr = newHead;
 
         // DEBUG
-        printArr(newHead);
+        // printArr(newHead);
     }
 
     return newHead;
@@ -93,6 +93,7 @@ void freeTree(Node* node) {
 	free(node);
 }
 
+// Used for debugging
 void preOrderPrint(Node* node)
 {
 	if (node == NULL)
@@ -100,4 +101,22 @@ void preOrderPrint(Node* node)
 	printf("%c\n", node->c);
 	preOrderPrint(node->left);
 	preOrderPrint(node->right);
+}
+
+void preOrderTraversal(Node* node, char* encoding) {
+    char* zero = "0";
+    char* one = "1";
+    if (node == NULL) {
+        return;
+    }
+
+    if (node->c == -1) {
+        encoding = strcat(encoding, zero);
+    }
+    else {
+        encoding = strcat(encoding, one);
+        encoding = strcat(encoding, &node->c);
+    }
+    preOrderTraversal(node->left, encoding);
+    preOrderTraversal(node->right, encoding);
 }

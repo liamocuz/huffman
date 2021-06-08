@@ -1,11 +1,48 @@
 #include "header.h"
 #include "encode.h"
 
+int compress(char* input, char* output) {
+    long int uniqueChars = 0;
+    // long int totalCharsCompressed = 0; // idk if I even need this
+    long int totalCharsUncompressed = 0;
+    int asciiCount[ASCII_SIZE];
+    char* table[ASCII_SIZE];
+    Node* root = NULL;
+
+    // FILE* inptr = NULL;
+    // FILE* outptr = NULL;
+
+    // Make sure all counts are set to 0
+    memset(asciiCount, 0, sizeof(asciiCount));
+
+    if ((countChars(input, asciiCount, &uniqueChars, &totalCharsUncompressed)) != ENCODE_SUCCESS) {
+        return ENCODE_FAILURE;
+    }
+
+    // DEBUG
+    printf("unique: %li, totalUncompressed: %li\n", uniqueChars, totalCharsUncompressed);
+
+    if ((root = createTree(uniqueChars, asciiCount)) == NULL) {
+        printf("Error: Could not build tree.\n");
+        return ENCODE_FAILURE;
+    }
+
+    if (buildTableFromTree(root, table) != ENCODE_SUCCESS) {
+        printf("Error: Could not create table.\n");
+        return ENCODE_FAILURE;
+    }
+
+    
+
+    freeTree(root);
+
+    return ENCODE_SUCCESS;
+}
+
 // Counts the occurence of each char from an input file
-long int countChars(char* filename, int* asciiCount) {
+int countChars(char* filename, int* asciiCount, long int* uniqueChars, long int* totalCharsUncompressed) {
     FILE* fptr = NULL;
     char ch;
-    long int uniqueChars = 0;
 
     if ((fptr = fopen(filename, "r")) == NULL) {
         printf("Error: Unable to open filename %s in countChars.\n", filename);
@@ -14,8 +51,9 @@ long int countChars(char* filename, int* asciiCount) {
 
     while ((ch = fgetc(fptr)) != EOF) {
         if (asciiCount[(int)ch] == 0)
-            uniqueChars++;
+            (*uniqueChars)++;
         asciiCount[(int)ch]++;
+        (*totalCharsUncompressed)++;
     }
 
     // DEBUG
@@ -25,23 +63,6 @@ long int countChars(char* filename, int* asciiCount) {
     // printf("unique: %ld\n", uniqueChars);
 
     fclose(fptr);
-
-    return uniqueChars;
-}
-
-int compress(char* input, char* output) {
-    long int uniqueChars = 0;
-    int asciiCount[ASCII_SIZE];
-    Node* root = NULL;
-
-    // Make sure all counts are set to 0
-    memset(asciiCount, 0, sizeof(asciiCount));
-
-    if ((uniqueChars = countChars(input, asciiCount)) == ENCODE_FAILURE) {
-        return ENCODE_FAILURE;
-    }
-
-    root = createTree(uniqueChars, asciiCount);
 
     return ENCODE_SUCCESS;
 }
@@ -87,16 +108,16 @@ Node* createTree(long int uniqueChars, int* asciiCount) {
 
     sortTreeArray(head);
 
-    printArr(head);
+    // DEBUG
+    // printArr(head);
 
     head = buildTreeFromList(head);
     root = head->node;
     free(head);
 
-    preOrderPrint(root);
+    // DEBUG
+    // preOrderPrint(root);
+    // freeTree(root);
 
-    freeTree(root);
-
-
-    return NULL;
+    return root;
 }
