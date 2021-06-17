@@ -10,6 +10,7 @@
 # Ignore list
 *.o
 *.d
+.DS_Store
 
 # Unignore list
 !Makefile
