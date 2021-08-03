@@ -104,18 +104,18 @@ void preOrderPrint(Node* node)
 }
 
 void preOrderTraversal(Node* node, char* encoding) {
-    char* zero = "0";
-    char* one = "1";
+    const char zero = '0';
+    const char one = '1';
     if (node == NULL) {
         return;
     }
 
     if (node->c == -1) {
-        encoding = strcat(encoding, zero);
+        strncat(encoding, &zero, 1);
     }
     else {
-        encoding = strcat(encoding, one);
-        encoding = strcat(encoding, &node->c);
+        strncat(encoding, &one, 1);
+        strncat(encoding, &node->c, 1);
     }
     preOrderTraversal(node->left, encoding);
     preOrderTraversal(node->right, encoding);
