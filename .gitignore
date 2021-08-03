@@ -11,6 +11,7 @@
 *.o
 *.d
 .DS_Store
+.idea
 
 # Unignore list
 !Makefile
