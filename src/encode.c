@@ -27,14 +27,15 @@ int compress(char* input, char* output) {
         return ENCODE_FAILURE;
     }
 
+    initTable(table);
+
     if (buildTableFromTree(root, table) != ENCODE_SUCCESS) {
         printf("Error: Could not create table.\n");
         return ENCODE_FAILURE;
     }
 
-    
-
     freeTree(root);
+    freeTable(table);
 
     return ENCODE_SUCCESS;
 }
