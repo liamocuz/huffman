@@ -20,6 +20,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -g -c $< -o $@
 
 run:
+	make
 	./$(EXE) 0 tests/gophers.txt output/gophers_out.txt
 
 leaks:
