@@ -58,7 +58,8 @@ int buildTableFromTree(Node* root, char** table) {
         i++;
     }
 
-    printTable(table);
+    // DEBUG
+    // printTable(table);
 
     return ENCODE_SUCCESS;
 }
