@@ -34,6 +34,12 @@ int compress(char* input, char* output) {
         return ENCODE_FAILURE;
     }
 
+    // Time to now compress the file
+    if (compressFile(input, output, table) != ENCODE_SUCCESS) {
+        printf("Error: Could not compress file.\n");
+        return ENCODE_FAILURE;
+    }
+
     freeTree(root);
     freeTable(table);
 
@@ -68,57 +74,49 @@ int countChars(char* filename, int* asciiCount, long int* uniqueChars, long int*
     return ENCODE_SUCCESS;
 }
 
-// Returns tree root
-Node* createTree(long int uniqueChars, int* asciiCount) {
+int compressFile(char* infile, char* outfile, char** table) {
+    FILE* inptr = NULL;
+    FILE* outptr = NULL;
+    char* code = NULL;
+    char ch = 0;
     int i = 0;
-    List* head = NULL;
-    List* ltemp = NULL;
-    Node* ntemp = NULL;
-    Node* root = NULL;
+    unsigned char byte = 0xff;
+    int written = 0;
+    char one = '1';
+    char zero = '0';
 
-    for (i = 0; i < ASCII_SIZE; i++) {
-        if (asciiCount[i] != 0) {
-            if (head == NULL) {
-                head = (List*)malloc(sizeof(List));
+    if ((inptr = fopen(infile, "r")) == NULL) {
+        printf("Error: Unable to open filename %s in compressFile.\n", infile);
+        return ENCODE_FAILURE;
+    }
 
-                ntemp = (Node*)malloc(sizeof(Node));
-                ntemp->c =(char)i;
-                ntemp-> weight = asciiCount[i];
-                ntemp->left = NULL;
-                ntemp->right = NULL;
+    if ((outptr = fopen(outfile, "w")) == NULL) {
+        printf("Error: Unable to open filename %s in compressFile.\n", outfile);
+        return ENCODE_FAILURE;
+    }
 
-                ltemp = head;
-                ltemp->node = ntemp;
-                ltemp->next = NULL;
+    while ((ch = fgetc(inptr)) != EOF) {
+        code = table[(int)ch];
+        i = 0;
+        ch = code[i];
+        while (ch != '\0') {
+            if (written == 8) {
+                fputc(byte, outptr);
+                written = 0;
+                byte = 0xff;
             }
-            else {
-                ltemp->next = (List*)malloc(sizeof(List));
-                ltemp = ltemp->next;
-
-                ntemp = (Node*)malloc(sizeof(Node));
-                ntemp->c = (char)i;
-                ntemp-> weight = asciiCount[i];
-                ntemp->left = NULL;
-                ntemp->right = NULL;
-
-                ltemp->node = ntemp;
-                ltemp->next = NULL;
+            if (ch == zero) {
+               byte >>= 1;
+               written++; 
             }
+            else if (ch == one) {
+                byte |= (0x80 >> 1);
+                written++;
+            }
+            i++;
+            ch = code[i];
         }
     }
 
-    sortTreeArray(head);
-
-    // DEBUG
-    // printArr(head);
-
-    head = buildTreeFromList(head);
-    root = head->node;
-    free(head);
-
-    // DEBUG
-    // preOrderPrint(root);
-    // freeTree(root);
-
-    return root;
+    return ENCODE_SUCCESS;
 }

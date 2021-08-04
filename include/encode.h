@@ -7,4 +7,4 @@
 // Function definitions
 int countChars(char* input, int* asciiCount, long int* uniqueChars, long int* totalCharsUncompressed);
 int compress(char* input, char* output);
-Node* createTree(long int uniqueChars, int* asciiCount);
+int compressFile(char* infile, char* outfile, char** table);
