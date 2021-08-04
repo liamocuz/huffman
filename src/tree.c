@@ -1,6 +1,62 @@
 #include "tree.h"
 #include "header.h"
 
+// Returns tree root
+Node* createTree(long int uniqueChars, int* asciiCount) {
+    int i = 0;
+    List* head = NULL;
+    List* ltemp = NULL;
+    Node* ntemp = NULL;
+    Node* root = NULL;
+
+    for (i = 0; i < ASCII_SIZE; i++) {
+        if (asciiCount[i] != 0) {
+            if (head == NULL) {
+                head = (List*)malloc(sizeof(List));
+
+                ntemp = (Node*)malloc(sizeof(Node));
+                ntemp->c =(char)i;
+                ntemp-> weight = asciiCount[i];
+                ntemp->left = NULL;
+                ntemp->right = NULL;
+
+                ltemp = head;
+                ltemp->node = ntemp;
+                ltemp->next = NULL;
+            }
+            else {
+                ltemp->next = (List*)malloc(sizeof(List));
+                ltemp = ltemp->next;
+
+                ntemp = (Node*)malloc(sizeof(Node));
+                ntemp->c = (char)i;
+                ntemp-> weight = asciiCount[i];
+                ntemp->left = NULL;
+                ntemp->right = NULL;
+
+                ltemp->node = ntemp;
+                ltemp->next = NULL;
+            }
+        }
+    }
+
+    sortTreeArray(head);
+
+    // DEBUG
+    // printArr(head);
+
+    head = buildTreeFromList(head);
+    root = head->node;
+    free(head);
+
+    // DEBUG
+    // preOrderPrint(root);
+    // freeTree(root);
+
+    return root;
+}
+
+
 // Sort the linked list using selection sort
 void sortTreeArray(List* head) {
     List* i = head;
