@@ -12,6 +12,7 @@ typedef struct List {
 } List;
 
 // Function Declarations
+Node* createTree(long int uniqueChars, int* asciiCount);
 void sortTreeArray(List* head);
 void swap(Node* a, Node* b);
 void printArr(List* head);
