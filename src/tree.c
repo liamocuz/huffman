@@ -43,6 +43,7 @@ Node* createTree(long int uniqueChars, int* asciiCount) {
     sortTreeArray(head);
 
     // DEBUG
+    // printf("\nARRAY AFTER SORT\n\n");
     // printArr(head);
 
     head = buildTreeFromList(head);
@@ -50,6 +51,7 @@ Node* createTree(long int uniqueChars, int* asciiCount) {
     free(head);
 
     // DEBUG
+    // printf("\nPREORDER PRINT\n\n");
     // preOrderPrint(root);
     // freeTree(root);
 
@@ -120,7 +122,12 @@ List* buildTreeFromList(List* head) {
 void printArr(List* head) {
     List* runner = head;
     while (runner) {
-        printf("char: %c, weight: %d\n", runner->node->c, runner->node->weight);
+        if (runner->node->c == -1) {
+            preOrderPrint(runner->node);
+        }
+        else {
+            printf("char: %c, weight: %d\n", runner->node->c, runner->node->weight);
+        }
         runner = runner->next;
     }
 
@@ -154,25 +161,38 @@ void preOrderPrint(Node* node)
 {
 	if (node == NULL)
 		return;
-	printf("%c\n", node->c);
+	printf("char: %c, weight: %d\n", node->c, node->weight);
 	preOrderPrint(node->left);
 	preOrderPrint(node->right);
 }
 
-void preOrderTraversal(Node* node, char* encoding) {
+void preOrderTraversal(Node* node, char* encoding, char* gather, char** table) {
     const char zero = '0';
     const char one = '1';
-    if (node == NULL) {
-        return;
-    }
-
-    if (node->c == -1) {
-        strncat(encoding, &zero, 1);
-    }
-    else {
+    if (node->c != -1) {
         strncat(encoding, &one, 1);
         strncat(encoding, &node->c, 1);
     }
-    preOrderTraversal(node->left, encoding);
-    preOrderTraversal(node->right, encoding);
+
+    if (node->left) {
+        strncat(encoding, &zero, 1);
+        strncat(gather, &zero, 1);
+        preOrderTraversal(node->left, encoding, gather, table);
+    }
+    
+    if (node->right) {
+        strncat(gather, &one, 1);
+        preOrderTraversal(node->right, encoding, gather, table);
+    }
+    
+    // DEBUG
+    // printf("char: %c, gather: %s\n", node->c, gather);
+
+    if (!node->left && !node->right) {
+        table[(int)node->c] = (char*)malloc(sizeof(char) * (strlen(gather) + 1));
+        strcpy(table[(int)node->c], gather);
+    }
+
+    gather[strlen(gather) - 1] = 0;
+    return;
 }
