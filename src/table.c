@@ -9,20 +9,14 @@ void initTable(char** table) {
 }
 
 int buildTableFromTree(Node* root, char** table, char* output) {
-    char encoding[1024];
-    char gather[128];
-    int len = 0;
-    int flip = 1;
-    char runner = '\0';
-    const char one = '1';
-    const char zero = '0';
-    int i = 0;
+    char encoding[ENCODING_SIZE];
+    char gather[GATHER_SIZE];
     FILE* outptr = NULL;
 
-    memset(encoding, 0, 1024);
-    memset(gather, 0, 128);
+    memset(encoding, 0, ENCODING_SIZE);
+    memset(gather, 0, GATHER_SIZE);
 
-    preOrderTraversal(root, encoding);
+    preOrderTraversal(root, encoding, gather, table);
 
     if ((outptr = fopen(output, "a")) == NULL) {
         printf("Error: Unable to open file %s.\n", output);
@@ -34,41 +28,12 @@ int buildTableFromTree(Node* root, char** table, char* output) {
     fclose(outptr);
 
     // DEBUG
+    // printf("\nENCODING\n\n");
     // printf("%s\n", encoding);
 
-    runner = encoding[i];
-    while (runner != '\0') {
-        runner = encoding[i];
-        
-        if (runner == zero) {
-            strncat(gather, &zero, 1);
-            len++;
-        }
-        else if (runner == one) {
-            i++;
-            runner = encoding[i];
-            table[(int)runner] = (char*)malloc(sizeof(char) * (len + 1));
-            table[(int)runner][len] = '\0'; 
-            memcpy(table[(int)runner], gather, len);
-
-           if (flip) {
-               gather[len - 1] = one;
-               flip = 0;
-           }
-           else {
-               gather[len - 2] = one;
-               gather[len - 1] = zero;
-               flip = 1;
-               len--;
-           } 
-
-            // DEBUG
-            // printf("char: %c, table entry: %s\n", runner, table[(int)runner]);
-        }
-        i++;
-    }
 
     // DEBUG
+    // printf("\nTABLE\n\n");
     // printTable(table);
 
     return ENCODE_SUCCESS;
@@ -76,7 +41,6 @@ int buildTableFromTree(Node* root, char** table, char* output) {
 
 void printTable(char** table) {
     int i = 0;
-
     for (i = 0; i < ASCII_SIZE; i++) {
         if (table[i] != NULL) {
             printf("%c: %s\n", (char)i, table[i]);
@@ -88,7 +52,7 @@ void freeTable(char** table) {
     int i = 0;
 
     for (i = 0; i < ASCII_SIZE; i++) {
-        if (table[i] != NULL) {
+        if (table[i]) {
             free(table[i]);
         }
     }
