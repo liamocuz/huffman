@@ -8,6 +8,9 @@ int compress(char* input, char* output) {
     int asciiCount[ASCII_SIZE];
     char* table[ASCII_SIZE];
     Node* root = NULL;
+    Header header;
+    header.numUniqueChars = 0;
+    header.numCharsUncomp = 0;
 
     // FILE* inptr = NULL;
     // FILE* outptr = NULL;
@@ -21,6 +24,9 @@ int compress(char* input, char* output) {
 
     // DEBUG
     printf("unique: %li, totalUncompressed: %li\n", uniqueChars, totalCharsUncompressed);
+
+    header.numUniqueChars = uniqueChars; 
+    header.numCharsUncomp = totalCharsUncompressed;
 
     if ((root = createTree(uniqueChars, asciiCount)) == NULL) {
         printf("Error: Could not build tree.\n");
@@ -80,8 +86,8 @@ int compressFile(char* infile, char* outfile, char** table) {
     char* code = NULL;
     char ch = 0;
     int i = 0;
-    unsigned char byte = 0xff;
-    int written = 0;
+    unsigned char byte = 0x00;
+    int shifts = 0;
     char one = '1';
     char zero = '0';
 
@@ -99,24 +105,48 @@ int compressFile(char* infile, char* outfile, char** table) {
         code = table[(int)ch];
         i = 0;
         ch = code[i];
+
         while (ch != '\0') {
-            if (written == 8) {
+            printf("num: %d\n", shifts + 1);
+            printf("ch: %c\n", ch);
+            printf("byte before: %x\n", byte);
+            if (ch == one) {
+                byte >>= 1;
+                byte |= 0x80;
+                shifts++;
+            }
+            else if (ch == zero) {
+                byte >>= 1;
+                shifts++;
+            }
+            else {
+                printf("Error: Invalid character retrieved from code string!\n");
+                fclose(inptr);
+                fclose(outptr);
+                return ENCODE_FAILURE;
+            }
+
+            if (shifts == 8) {
+                printf("\nshifts Byte\n");
+                printf("Byte: %x\n", byte);
                 fputc(byte, outptr);
-                written = 0;
-                byte = 0xff;
+                shifts = 0;
+                byte = 0x00;
             }
-            if (ch == zero) {
-               byte >>= 1;
-               written++; 
-            }
-            else if (ch == one) {
-                byte |= (0x80 >> 1);
-                written++;
-            }
+            printf("byte after: %x\n", byte);
             i++;
             ch = code[i];
-        }
+        }        
     }
+
+    while (shifts != 8) {
+        byte >>= 1;
+        shifts++;
+    }
+    fputc(byte, outptr);
+
+    fclose(inptr);
+    fclose(outptr);
 
     return ENCODE_SUCCESS;
 }
