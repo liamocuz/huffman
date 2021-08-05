@@ -24,7 +24,7 @@ void preOrderTraversal(Node* node, char* encoding);
 List* buildTreeFromList(List* head);
 
 // Table functions
-int buildTableFromTree(Node* root, char** table);
+int buildTableFromTree(Node* root, char** table, char* output);
 void initTable(char** table);
 void printTable(char** table);
 void freeTable(char** table);
