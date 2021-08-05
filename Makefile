@@ -22,6 +22,11 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 run:
 	make
 	./$(EXE) 0 tests/gophers.txt output/gophers_out.txt
+	./$(EXE) 0 tests/frost.txt output/frost_out.txt
+	# ./$(EXE) 0 tests/bible.txt output/bible_out.txt
+	./$(EXE) 0 tests/liam.txt output/liam_out.txt
+	./$(EXE) 0 tests/simple.txt output/simple_out.txt
+	./$(EXE) 0 tests/odyssey.txt output/odyssey_out.txt
 
 leaks:
 	leaks -atExit -- ./$(EXE) 0 tests/gophers.txt output/gophers_out.txt
@@ -29,5 +34,6 @@ leaks:
 clean:
 	cd build; rm *.o; rm *.d;
 	rm $(EXE)
+	cd output; rm *;
 
 -include $(OBJ:.o=.d)
