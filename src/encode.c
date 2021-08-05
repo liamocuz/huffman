@@ -66,20 +66,29 @@ int countChars(char* filename, int* asciiCount, long int* uniqueChars, long int*
     char ch;
 
     if ((fptr = fopen(filename, "r")) == NULL) {
-        printf("Error: Unable to open filename %s in countChars.\n", filename);
+        printf("Error: Unable to open file %s.\n", filename);
         return ENCODE_FAILURE;
     }
 
     while ((ch = fgetc(fptr)) != EOF) {
-        if (asciiCount[(int)ch] == 0)
+        if (asciiCount[(int)ch] == 0) {
             (*uniqueChars)++;
+
+            // DEBUG
+            // printf("count ch: %c, val: %d\n", ch, (int)ch);
+        }
         asciiCount[(int)ch]++;
         (*totalCharsUncompressed)++;
     }
 
     // DEBUG
+    // int entry = 1;
+    // printf("\nWEIGHTS\n\n");
     // for (int i = 0; i < ASCII_SIZE; i++) {
-    //     printf("char: %c, weight: %d\n", i, asciiCount[i]);
+    //     if (asciiCount[i]) {
+    //         printf("num: %d, int: %d: char: %c, weight: %d\n", entry, i, (char)i, asciiCount[i]);
+    //         entry++;
+    //     }
     // }
     // printf("unique: %ld\n", uniqueChars);
 
@@ -100,12 +109,12 @@ int compressFile(char* infile, char* outfile, char** table) {
     char zero = '0';
 
     if ((inptr = fopen(infile, "r")) == NULL) {
-        printf("Error: Unable to open filename %s in compressFile.\n", infile);
+        printf("Error: Unable to open file %s.\n", infile);
         return ENCODE_FAILURE;
     }
 
     if ((outptr = fopen(outfile, "a")) == NULL) {
-        printf("Error: Unable to open filename %s in compressFile.\n", outfile);
+        printf("Error: Unable to open file %s.\n", outfile);
         return ENCODE_FAILURE;
     }
 
@@ -113,6 +122,9 @@ int compressFile(char* infile, char* outfile, char** table) {
         code = table[(int)ch];
         i = 0;
         ch = code[i];
+
+        // DEBUG
+        // printf("ch: %c\n", ch);
 
         // DEBUG
         while (ch != '\0') {
@@ -129,7 +141,7 @@ int compressFile(char* infile, char* outfile, char** table) {
                 shifts++;
             }
             else {
-                printf("Error: Invalid character retrieved from code string!\n");
+                printf("Error: Invalid character %c %d retrieved from code string!\n", ch, (int)ch);
                 fclose(inptr);
                 fclose(outptr);
                 return ENCODE_FAILURE;
