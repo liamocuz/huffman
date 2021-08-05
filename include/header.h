@@ -6,7 +6,6 @@
 // Header struct
 
 typedef struct Header {
-    long int numCharsComp;
     long int numUniqueChars;
     long int numCharsUncomp;
 } Header;
