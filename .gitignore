@@ -12,6 +12,7 @@
 *.d
 .DS_Store
 .idea
+output/
 
 # Unignore list
 !Makefile
