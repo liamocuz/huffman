@@ -166,23 +166,26 @@ void preOrderPrint(Node* node)
 	preOrderPrint(node->right);
 }
 
-void preOrderTraversal(Node* node, char* encoding, char* gather, char** table) {
+void preOrderTraversal(Node* node, char* encoding, char* gather, char** table, long int* numCharsEncoding) {
     const char zero = '0';
     const char one = '1';
     if (node->c != -1) {
         strncat(encoding, &one, 1);
         strncat(encoding, &node->c, 1);
+        (*numCharsEncoding)++;
+        (*numCharsEncoding)++;
     }
 
     if (node->left) {
         strncat(encoding, &zero, 1);
+        (*numCharsEncoding)++;
         strncat(gather, &zero, 1);
-        preOrderTraversal(node->left, encoding, gather, table);
+        preOrderTraversal(node->left, encoding, gather, table, numCharsEncoding);
     }
     
     if (node->right) {
         strncat(gather, &one, 1);
-        preOrderTraversal(node->right, encoding, gather, table);
+        preOrderTraversal(node->right, encoding, gather, table, numCharsEncoding);
     }
     
     // DEBUG

@@ -20,11 +20,11 @@ void freeArr(List* head);
 Node* joinNodes(Node* a, Node* b);
 void freeTree(Node* root);
 void preOrderPrint(Node* node);
-void preOrderTraversal(Node* node, char* encoding, char* gather, char** table);
+void preOrderTraversal(Node* node, char* encoding, char* gather, char** table, long int* numCharsEncoding);
 List* buildTreeFromList(List* head);
 
 // Table functions
-int buildTableFromTree(Node* root, char** table, char* output);
+int buildTableFromTree(Node* root, char** table, long int* numCHarsEncoding, char* output);
 void initTable(char** table);
 void printTable(char** table);
 void freeTable(char** table);

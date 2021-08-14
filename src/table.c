@@ -8,7 +8,7 @@ void initTable(char** table) {
    }
 }
 
-int buildTableFromTree(Node* root, char** table, char* output) {
+int buildTableFromTree(Node* root, char** table, long int* numCharsEncoding, char* output) {
     char encoding[ENCODING_SIZE];
     char gather[GATHER_SIZE];
     FILE* outptr = NULL;
@@ -16,7 +16,7 @@ int buildTableFromTree(Node* root, char** table, char* output) {
     memset(encoding, 0, ENCODING_SIZE);
     memset(gather, 0, GATHER_SIZE);
 
-    preOrderTraversal(root, encoding, gather, table);
+    preOrderTraversal(root, encoding, gather, table, numCharsEncoding);
 
     if ((outptr = fopen(output, "a")) == NULL) {
         printf("Error: Unable to open file %s.\n", output);

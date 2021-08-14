@@ -2,14 +2,12 @@
 #include "encode.h"
 
 int compress(char* input, char* output) {
-    long int uniqueChars = 0;
-    // long int totalCharsCompressed = 0; // idk if I even need this
-    long int totalCharsUncompressed = 0;
     int asciiCount[ASCII_SIZE];
     char* table[ASCII_SIZE];
     Node* root = NULL;
     Header header;
-    header.numUniqueChars = 0;
+    header.numCharsEncoding = 0;
+    header.numCharsTopology = 0;
     header.numCharsUncomp = 0;
 
     // FILE* inptr = NULL;
@@ -18,35 +16,34 @@ int compress(char* input, char* output) {
     // Make sure all counts are set to 0
     memset(asciiCount, 0, sizeof(asciiCount));
 
-    if ((countChars(input, asciiCount, &uniqueChars, &totalCharsUncompressed)) != ENCODE_SUCCESS) {
+    if ((countChars(input, asciiCount, &header.numCharsTopology, &header.numCharsUncomp)) != ENCODE_SUCCESS) {
         return ENCODE_FAILURE;
     }
 
     // DEBUG
-    // printf("unique: %li, totalUncompressed: %li\n", uniqueChars, totalCharsUncompressed);
+    // printf("numCharsEncoding: %li, numCharsUncomp: %li\n", header.numCharsTopology, header.numCharsUncomp);
 
-    header.numUniqueChars = uniqueChars; 
-    header.numCharsUncomp = totalCharsUncompressed;
-
-    if ((outptr = fopen(output, "w")) == NULL) {
-        printf("Error: Unable to open file %s.\n", output);
-        return ENCODE_FAILURE;
-    }
-
-    fwrite(&header, 1, sizeof(header), outptr);
-    fclose(outptr);
-
-    if ((root = createTree(uniqueChars, asciiCount)) == NULL) {
+    if ((root = createTree(header.numCharsTopology, asciiCount)) == NULL) {
         printf("Error: Could not build tree.\n");
         return ENCODE_FAILURE;
     }
 
     initTable(table);
 
-    if (buildTableFromTree(root, table, output) != ENCODE_SUCCESS) {
+    if (buildTableFromTree(root, table, &header.numCharsEncoding, output) != ENCODE_SUCCESS) {
         printf("Error: Could not create table.\n");
         return ENCODE_FAILURE;
     }
+
+    if ((outptr = fopen(output, "w")) == NULL) {
+        printf("Error: Unable to open file %s.\n", output);
+        return ENCODE_FAILURE;
+    }
+    fwrite(&header, 1, sizeof(header), outptr);
+    fclose(outptr);
+
+    // DEBUG
+    // printf("numCharsEncoding: %li\n", header.numCharsEncoding);
 
     // Time to now compress the file
     if (compressFile(input, output, table) != ENCODE_SUCCESS) {

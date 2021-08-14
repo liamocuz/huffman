@@ -12,8 +12,9 @@
 // Header struct
 
 typedef struct Header {
-    long int numUniqueChars;
-    long int numCharsUncomp;
+    long int numCharsEncoding;  // Length of the encoding string
+    long int numCharsTopology;  // Number of chars storing the topology
+    long int numCharsUncomp;    // Number of chars in the uncompressed file
 } Header;
 
 // Constants
