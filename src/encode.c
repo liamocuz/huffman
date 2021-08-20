@@ -10,9 +10,6 @@ int compress(char* input, char* output) {
     header.numCharsTopology = 0;
     header.numCharsUncomp = 0;
 
-    // FILE* inptr = NULL;
-    FILE* outptr = NULL;
-
     // Make sure all counts are set to 0
     memset(asciiCount, 0, sizeof(asciiCount));
 
@@ -30,17 +27,10 @@ int compress(char* input, char* output) {
 
     initTable(table);
 
-    if (buildTableFromTree(root, table, &header.numCharsEncoding, output) != ENCODE_SUCCESS) {
+    if (buildTableFromTree(root, table, &header, output) != ENCODE_SUCCESS) {
         printf("Error: Could not create table.\n");
         return ENCODE_FAILURE;
     }
-
-    if ((outptr = fopen(output, "w")) == NULL) {
-        printf("Error: Unable to open file %s.\n", output);
-        return ENCODE_FAILURE;
-    }
-    fwrite(&header, 1, sizeof(header), outptr);
-    fclose(outptr);
 
     // DEBUG
     // printf("numCharsEncoding: %li\n", header.numCharsEncoding);
@@ -110,10 +100,11 @@ int compressFile(char* infile, char* outfile, char** table) {
         return ENCODE_FAILURE;
     }
 
-    if ((outptr = fopen(outfile, "a")) == NULL) {
+    if ((outptr = fopen(outfile, "w")) == NULL) {
         printf("Error: Unable to open file %s.\n", outfile);
         return ENCODE_FAILURE;
     }
+    fseek(outptr, 0, SEEK_END);
 
     while ((ch = fgetc(inptr)) != EOF) {
         code = table[(int)ch];
@@ -166,5 +157,58 @@ int compressFile(char* infile, char* outfile, char** table) {
     fclose(inptr);
     fclose(outptr);
 
+    return ENCODE_SUCCESS;
+}
+
+int writeEncoding (char* encoding, char* output) {
+    char ch = 0;
+    int shifts = 0;
+    int i = 0;
+    unsigned char byte = 0x00;
+    const char one = '1';
+    const char zero = '0';
+    FILE* outptr = NULL;
+
+    if ((outptr = fopen(output, "w")) == NULL) {
+        printf("Error: Unable to open file %s.\n");
+        return ENCODE_FAILURE;
+    }
+    fseek(outptr, 0, SEEK_END);
+
+    ch = encoding[i];
+    while (ch != '\0') {
+        if (ch == one) {
+
+        }
+        else if (ch == zero) {
+
+        }
+        else if (ch >= 32 && ch <= 127) {
+
+        }
+        else {
+            printf("Error: Invalid character %c %d retrieved from encoding string!\n", ch, (int)ch);
+            fclose(outptr);
+            return ENCODE_FAILURE;
+        }
+
+        if (shifts == 8) {
+            putc(byte, outptr);
+            shifts = 0;
+            byte = 0x00;
+        }
+        i++;
+        ch = encoding[i];
+    }
+
+    while (shifts != 8) {
+        byte >>= 1;
+        shifts++;
+    }
+
+    fputc(byte, outptr);
+
+    fclose(outptr);
+    
     return ENCODE_SUCCESS;
 }
