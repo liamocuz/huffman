@@ -11,6 +11,13 @@ typedef struct List {
     struct List* next;
 } List;
 
+typedef struct Header {
+    long int numCharsEncoding;  // Length of the encoding string
+    long int numCharsTopology;  // Number of chars storing the topology
+    long int numCharsUncomp;    // Number of chars in the uncompressed file
+} Header;
+
+
 // Function Declarations
 Node* createTree(long int uniqueChars, int* asciiCount);
 void sortTreeArray(List* head);
@@ -24,7 +31,8 @@ void preOrderTraversal(Node* node, char* encoding, char* gather, char** table, l
 List* buildTreeFromList(List* head);
 
 // Table functions
-int buildTableFromTree(Node* root, char** table, long int* numCHarsEncoding, char* output);
+int buildTableFromTree(Node* root, char** table, Header* header, char* output);
+int writeEncoding(char* encoding, char* output);
 void initTable(char** table);
 void printTable(char** table);
 void freeTable(char** table);
