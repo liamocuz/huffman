@@ -8,7 +8,7 @@ void initTable(char** table) {
    }
 }
 
-int buildTableFromTree(Node* root, char** table, long int* numCharsEncoding, char* output) {
+int buildTableFromTree(Node* root, char** table, Header* header, char* output) {
     char encoding[ENCODING_SIZE];
     char gather[GATHER_SIZE];
     FILE* outptr = NULL;
@@ -16,21 +16,24 @@ int buildTableFromTree(Node* root, char** table, long int* numCharsEncoding, cha
     memset(encoding, 0, ENCODING_SIZE);
     memset(gather, 0, GATHER_SIZE);
 
-    preOrderTraversal(root, encoding, gather, table, numCharsEncoding);
+    preOrderTraversal(root, encoding, gather, table, &header->numCharsEncoding);
 
-    if ((outptr = fopen(output, "a")) == NULL) {
+    if ((outptr = fopen(output, "w")) == NULL) {
         printf("Error: Unable to open file %s.\n", output);
         return ENCODE_FAILURE;
     }
-
-    fputs(encoding, outptr);
-
+    fseek(outptr, 0, SEEK_END);
+    fwrite(header, sizeof(Header), 1, outptr);
     fclose(outptr);
 
     // DEBUG
-    // printf("\nENCODING\n\n");
-    // printf("%s\n", encoding);
-
+    printf("\nENCODING\n");
+    printf("%s\n", encoding);
+    
+    if ((writeEncoding(encoding, output)) == ENCODE_FAILURE) {
+        printf("Error: Unable to write encoding.\n");
+        return ENCODE_FAILURE;
+    }
 
     // DEBUG
     // printf("\nTABLE\n\n");
