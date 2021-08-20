@@ -1,6 +1,5 @@
 #include "header.h"
 #include "encode.h"
-#include "decode.h"
 
 int main (int argc, char** argv) {
     int mode = -1;
@@ -24,7 +23,10 @@ int main (int argc, char** argv) {
         }
     }
     else if (mode == 1) {
-
+        if (decode(input, output) == ENCODE_FAILURE) {
+            printf("Exiting!\n");
+            return EXIT_FAILURE;
+        }
     }
     else {
         printf("Incorrect mode: %d\n", mode);
