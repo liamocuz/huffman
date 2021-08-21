@@ -18,11 +18,10 @@ int buildTableFromTree(Node* root, char** table, Header* header, char* output) {
 
     preOrderTraversal(root, encoding, gather, table, &header->numCharsEncoding);
 
-    if ((outptr = fopen(output, "w")) == NULL) {
+    if ((outptr = fopen(output, "w+")) == NULL) {
         printf("Error: Unable to open file %s.\n", output);
         return ENCODE_FAILURE;
     }
-    fseek(outptr, 0, SEEK_END);
     fwrite(header, sizeof(Header), 1, outptr);
     fclose(outptr);
 

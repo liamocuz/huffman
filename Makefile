@@ -27,7 +27,7 @@ run:
 	# ./$(EXE) 0 tests/liam.txt output/liam_out.txt
 	# ./$(EXE) 0 tests/simple.txt output/simple_out.txt
 	# ./$(EXE) 0 tests/odyssey.txt output/odyssey_out.txt
-	./$(EXE) 1 output/gophers_out.txt a.txt
+	# ./$(EXE) 1 output/gophers_out.txt a.txt
 
 leaks:
 	leaks -atExit -- ./$(EXE) 0 tests/gophers.txt output/gophers_out.txt

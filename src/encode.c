@@ -100,11 +100,10 @@ int compressFile(char* infile, char* outfile, char** table) {
         return ENCODE_FAILURE;
     }
 
-    if ((outptr = fopen(outfile, "w")) == NULL) {
+    if ((outptr = fopen(outfile, "a")) == NULL) {
         printf("Error: Unable to open file %s.\n", outfile);
         return ENCODE_FAILURE;
     }
-    fseek(outptr, 0, SEEK_END);
 
     while ((ch = fgetc(inptr)) != EOF) {
         code = table[(int)ch];
@@ -164,27 +163,41 @@ int writeEncoding (char* encoding, char* output) {
     char ch = 0;
     int shifts = 0;
     int i = 0;
+    int j = 0;
     unsigned char byte = 0x00;
+    const unsigned char masks[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
     const char one = '1';
     const char zero = '0';
     FILE* outptr = NULL;
 
-    if ((outptr = fopen(output, "w")) == NULL) {
-        printf("Error: Unable to open file %s.\n");
+    if ((outptr = fopen(output, "a")) == NULL) {
+        printf("Error: Unable to open file %s.\n", output);
         return ENCODE_FAILURE;
     }
-    fseek(outptr, 0, SEEK_END);
 
     ch = encoding[i];
     while (ch != '\0') {
         if (ch == one) {
-
+            byte >>= 1;
+            byte |= 0x80;
+            shifts++; 
         }
         else if (ch == zero) {
-
+            byte >>= 1;
+            shifts++;
         }
         else if (ch >= 32 && ch <= 127) {
+            for (j = 0; j < 8; j++) {
+                byte >>= 1;
+                byte |= (masks[j] & ch) << (7 - j);
+                shifts++;
 
+                if (shifts == 8) {
+                    putc(byte, outptr);
+                    shifts = 0;
+                    byte = 0x00;
+                }
+            }
         }
         else {
             printf("Error: Invalid character %c %d retrieved from encoding string!\n", ch, (int)ch);
