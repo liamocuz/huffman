@@ -6,7 +6,7 @@ int compress(char* input, char* output) {
     char* table[ASCII_SIZE];
     Node* root = NULL;
     Header header;
-    header.numCharsEncoding = 0;
+    header.numCharsComp = 0;
     header.numCharsTopology = 0;
     header.numCharsUncomp = 0;
 
@@ -16,9 +16,6 @@ int compress(char* input, char* output) {
     if ((countChars(input, asciiCount, &header.numCharsTopology, &header.numCharsUncomp)) != ENCODE_SUCCESS) {
         return ENCODE_FAILURE;
     }
-
-    // DEBUG
-    // printf("numCharsEncoding: %li, numCharsUncomp: %li\n", header.numCharsTopology, header.numCharsUncomp);
 
     if ((root = createTree(header.numCharsTopology, asciiCount)) == NULL) {
         printf("Error: Could not build tree.\n");
@@ -32,8 +29,12 @@ int compress(char* input, char* output) {
         return ENCODE_FAILURE;
     }
 
+    preOrderPrint(root);
+
     // DEBUG
-    // printf("numCharsEncoding: %li\n", header.numCharsEncoding);
+    printf("numCharsComp: %li, numCharsTopology: %li, numCharsUncomp: %li\n",
+        header.numCharsComp, header.numCharsTopology, header.numCharsUncomp);
+    printTable(table);
 
     // Time to now compress the file
     if (compressFile(input, output, table) != ENCODE_SUCCESS) {
@@ -60,9 +61,6 @@ int countChars(char* filename, int* asciiCount, long int* uniqueChars, long int*
     while ((ch = fgetc(fptr)) != EOF) {
         if (asciiCount[(int)ch] == 0) {
             (*uniqueChars)++;
-
-            // DEBUG
-            // printf("count ch: %c, val: %d\n", ch, (int)ch);
         }
         asciiCount[(int)ch]++;
         (*totalCharsUncompressed)++;
@@ -110,14 +108,7 @@ int compressFile(char* infile, char* outfile, char** table) {
         i = 0;
         ch = code[i];
 
-        // DEBUG
-        // printf("ch: %c\n", ch);
-
-        // DEBUG
         while (ch != '\0') {
-            // printf("num: %d\n", shifts + 1);
-            // printf("ch: %c\n", ch);
-            // printf("byte before: %x\n", byte);
             if (ch == one) {
                 byte >>= 1;
                 byte |= 0x80;
@@ -135,13 +126,10 @@ int compressFile(char* infile, char* outfile, char** table) {
             }
 
             if (shifts == 8) {
-                // printf("\nshifts Byte\n");
-                // printf("Byte: %x\n", byte);
                 fputc(byte, outptr);
                 shifts = 0;
                 byte = 0x00;
             }
-            // printf("byte after: %x\n", byte);
             i++;
             ch = code[i];
         }        
@@ -186,7 +174,7 @@ int writeEncoding (char* encoding, char* output) {
             byte >>= 1;
             shifts++;
         }
-        else if (ch >= 32 && ch <= 127) {
+        else if (ch >= 1 && ch <= 127) {
             for (j = 0; j < 8; j++) {
                 byte >>= 1;
                 byte |= (masks[j] & ch) << (7 - j);

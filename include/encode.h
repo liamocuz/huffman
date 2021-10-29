@@ -7,4 +7,7 @@ int compressFile(char* infile, char* outfile, char** table);
 
 // Decoding Function Definitions
 int decode(char* input, char* output);
-Node* buildTreeFromEncoding(char* encoding, long int numCharsTopology);
+int decompress(char* output, Node* root, unsigned char* encoding, long int numCharsUncomp);
+void buildTreeFromEncoding(Node* root, unsigned char* encoding, int* i, long int numCharsTopology, int* numCharsPut);
+void parseByteEncoding(unsigned char* byteEncoding, unsigned char* strEncoding, long int numCharsTopology);
+void initNode(Node* node);

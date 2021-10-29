@@ -12,7 +12,7 @@ typedef struct List {
 } List;
 
 typedef struct Header {
-    long int numCharsEncoding;  // Length of the encoding string
+    long int numCharsComp;      // Number of chars in compressed file 
     long int numCharsTopology;  // Number of chars storing the topology
     long int numCharsUncomp;    // Number of chars in the uncompressed file
 } Header;
@@ -27,7 +27,7 @@ void freeArr(List* head);
 Node* joinNodes(Node* a, Node* b);
 void freeTree(Node* root);
 void preOrderPrint(Node* node);
-void preOrderTraversal(Node* node, char* encoding, char* gather, char** table, long int* numCharsEncoding);
+void preOrderTraversal(Node* node, char* encoding, char* gather, char** table, long int* numCharsComp);
 List* buildTreeFromList(List* head);
 
 // Table functions

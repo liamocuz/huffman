@@ -7,7 +7,7 @@
 #define ENCODE_SUCCESS 1
 #define ENCODE_FAILURE -1
 #define GATHER_SIZE 128
-#define ENCODING_SIZE 1024
+#define ENCODING_SIZE 4096
 
 // Constants
 #define ASCII_SIZE 128

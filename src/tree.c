@@ -111,9 +111,6 @@ List* buildTreeFromList(List* head) {
         }
 
         curr = newHead;
-
-        // DEBUG
-        // printArr(newHead);
     }
 
     return newHead;
@@ -166,26 +163,26 @@ void preOrderPrint(Node* node)
 	preOrderPrint(node->right);
 }
 
-void preOrderTraversal(Node* node, char* encoding, char* gather, char** table, long int* numCharsEncoding) {
+void preOrderTraversal(Node* node, char* encoding, char* gather, char** table, long int* numCharsComp) {
     const char zero = '0';
     const char one = '1';
     if (node->c != -1) {
         strncat(encoding, &one, 1);
         strncat(encoding, &node->c, 1);
-        (*numCharsEncoding)++;
-        (*numCharsEncoding)++;
+        (*numCharsComp)++;
+        (*numCharsComp)++;
     }
 
     if (node->left) {
         strncat(encoding, &zero, 1);
-        (*numCharsEncoding)++;
+        (*numCharsComp)++;
         strncat(gather, &zero, 1);
-        preOrderTraversal(node->left, encoding, gather, table, numCharsEncoding);
+        preOrderTraversal(node->left, encoding, gather, table, numCharsComp);
     }
     
     if (node->right) {
         strncat(gather, &one, 1);
-        preOrderTraversal(node->right, encoding, gather, table, numCharsEncoding);
+        preOrderTraversal(node->right, encoding, gather, table, numCharsComp);
     }
     
     // DEBUG
