@@ -3,11 +3,11 @@
 
 // Returns tree root
 Node* createTree(long int uniqueChars, int* asciiCount) {
-    int i = 0;
-    List* head = NULL;
-    List* ltemp = NULL;
-    Node* ntemp = NULL;
-    Node* root = NULL;
+    int i = 0;              // An iterator used to count from 0 to ASCII_SIZE
+    List* head = NULL;      // Head of the linked list that contains a tree node
+    List* ltemp = NULL;     // Temp variable to track previous List entry
+    Node* ntemp = NULL;     // Temp variable of a new node being created for the Node member of the List
+    Node* root = NULL;      // The final root of the tree
 
     for (i = 0; i < ASCII_SIZE; i++) {
         if (asciiCount[i] != 0) {
@@ -40,12 +40,14 @@ Node* createTree(long int uniqueChars, int* asciiCount) {
         }
     }
 
+    // Does a selection sort on the Linked List based upon the weights of each List
     sortTreeArray(head);
 
     // DEBUG
     // printf("\nARRAY AFTER SORT\n\n");
     // printArr(head);
 
+    // Constructs the tree now from the linked list
     head = buildTreeFromList(head);
     root = head->node;
     free(head);
@@ -79,13 +81,35 @@ void sortTreeArray(List* head) {
     }
 }
 
-void swap(Node* a, Node* b)  
-{  
-    Node temp = *a;
-    *a = *b;  
-    *b = temp;  
+// Builds the tree from the sorted linked list
+List* buildTreeFromList(List* head) {
+    List* curr = head;
+    List* newHead = head;
+
+    // Shrinks the list down one List node at a time until just one node is left with the tree root inside of it
+    while (newHead->next) {
+        curr->next->node = joinNodes(curr->node, curr->next->node);
+        newHead = curr->next;
+        free(curr);
+        curr = newHead;
+
+        // Places the new node in the correct spot based upon it's weight, just by swapping the 
+        // Tree nodes inside of the list nodes. If new node is the same weight after current node(s), 
+        // place it after them
+        while (curr->next && (curr->node->weight >= curr->next->node->weight)) {
+            swap(curr->node, curr->next->node);
+            curr = curr->next;
+        }
+
+        // Returns curr back to the beginning of the list
+        curr = newHead;
+    }
+
+    // Returns the final List node
+    return newHead;
 }
 
+// Creates a new Node from two nodes
 Node* joinNodes(Node* a, Node* b) {
     Node* new = (Node*)malloc(sizeof(Node));
     new->c = -1;
@@ -95,25 +119,12 @@ Node* joinNodes(Node* a, Node* b) {
     return new;
 }
 
-List* buildTreeFromList(List* head) {
-    List* curr = head;
-    List* newHead = head;
-
-    while (newHead->next) {
-        curr->next->node = joinNodes(curr->node, curr->next->node);
-        newHead = curr->next;
-        free(curr);
-        curr = newHead;
-
-        while (curr->next && (curr->node->weight >= curr->next->node->weight)) {
-            swap(curr->node, curr->next->node);
-            curr = curr->next;
-        }
-
-        curr = newHead;
-    }
-
-    return newHead;
+// Simple swap function for Tree nodes
+void swap(Node* a, Node* b)  
+{  
+    Node temp = *a;
+    *a = *b;  
+    *b = temp;  
 }
 
 void printArr(List* head) {
@@ -163,36 +174,59 @@ void preOrderPrint(Node* node)
 	preOrderPrint(node->right);
 }
 
-void preOrderTraversal(Node* node, char* encoding, char* gather, char** table, long int* numCharsComp) {
-    const char zero = '0';
-    const char one = '1';
-    if (node->c != -1) {
-        strncat(encoding, &one, 1);
-        strncat(encoding, &node->c, 1);
-        (*numCharsComp)++;
-        (*numCharsComp)++;
+// 001g1o001s1 001e1h01p1r
+/*
+gather and topology cannot be treated the same
+gather is if you go left or right
+topology is '0' if non-leaf, '1' and char if lead node
+size parameter is used to track the length of gather as it will need to grow and shrink
+*/
+void preOrderTraversal(Node* node, char* gather, int* gatherSize, char** table, char* topology, int* topologySize, int* asciiCount, long int* numCharsComp) {
+
+    if (!node) {
+        return;
+    }
+    
+    if (!(node->left) && !(node->right)) {
+        // If at leaf node, concatenate a '1' and char to topology
+        topology[(*topologySize)] = '1';
+        (*topologySize)++;
+        topology[(*topologySize)] = node->c;
+        (*topologySize)++;
+
+        // If at leaf node, write the gather to the index in the table
+        table[(int)node->c] = (char*)malloc(sizeof(char) * (*gatherSize) + 1);
+        strcpy(table[(int)node->c], gather);
+        (*numCharsComp) += (*gatherSize) * asciiCount[(int)node->c];
+
+        // About to return up a level, shrink gather by 1 and decrement size
+        gather[(*gatherSize) - 1] = '\0';
+        (*gatherSize)--;
+
+        return;
+    }
+    else {
+        topology[(*topologySize)] = '0';
+        (*topologySize)++;
     }
 
     if (node->left) {
-        strncat(encoding, &zero, 1);
-        (*numCharsComp)++;
-        strncat(gather, &zero, 1);
-        preOrderTraversal(node->left, encoding, gather, table, numCharsComp);
+        // Going left, cat a '0' to gather
+        gather[(*gatherSize)] = '0';
+        (*gatherSize)++;
+        preOrderTraversal(node->left, gather, gatherSize, table, topology, topologySize, asciiCount, numCharsComp);
     }
-    
+
     if (node->right) {
-        strncat(gather, &one, 1);
-        preOrderTraversal(node->right, encoding, gather, table, numCharsComp);
+        // Going right, cat a '1' to gather
+        gather[(*gatherSize)] = '1';
+        (*gatherSize)++;
+        preOrderTraversal(node->right, gather, gatherSize, table, topology, topologySize, asciiCount, numCharsComp);
     }
     
-    // DEBUG
-    // printf("char: %c, gather: %s\n", node->c, gather);
+    // About to return up a level, shrink gather by 1 and decrement size
+    gather[(*gatherSize) - 1] = '\0';
+    (*gatherSize)--;
 
-    if (!node->left && !node->right) {
-        table[(int)node->c] = (char*)malloc(sizeof(char) * (strlen(gather) + 1));
-        strcpy(table[(int)node->c], gather);
-    }
-
-    gather[strlen(gather) - 1] = 0;
     return;
 }
