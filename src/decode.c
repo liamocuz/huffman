@@ -6,12 +6,14 @@ int decode(char* input, char* output) {
     Node* root = NULL;
     FILE* inptr = NULL;
     unsigned long int fsize = 0;
-    unsigned char byteEncoding[ENCODING_SIZE];
-    unsigned char strEncoding[ENCODING_SIZE];
-    unsigned char pathEncoding[ENCODING_SIZE];
+    unsigned long int topologySize = 0;
+    unsigned char byteTopology[ENCODING_SIZE];
+    char stringTopology[ENCODING_SIZE];
+    unsigned char compressedEncoding[ENCODING_SIZE];
 
-    memset(byteEncoding, 0, sizeof(byteEncoding));
-    memset(strEncoding, 0, sizeof(strEncoding));    // Used for debugging
+    memset(byteTopology, 0, sizeof(byteTopology));
+    memset(stringTopology, 0, sizeof(stringTopology));    // Used for debugging
+    memset(compressedEncoding, 0, sizeof(compressedEncoding));
     memset(&header, 0, sizeof(header));
 
     if ((inptr = fopen(input, "r")) == NULL) {
@@ -25,42 +27,45 @@ int decode(char* input, char* output) {
     printf("fsize: %lu\n", fsize);
 
     fread(&header, sizeof(header), 1, inptr);
-    printf("ftell1: %lu\n", ftell(inptr));
-    fread(byteEncoding, sizeof(unsigned char), header.numCharsComp, inptr);
-    printf("ftell2: %lu\n", ftell(inptr));
-    printf("ftell diff: %lu\n", fsize - ftell(inptr));
-    fread(pathEncoding, sizeof(unsigned char), fsize - ftell(inptr), inptr);
-    printf("ftell3: %lu\n", ftell(inptr));
+    topologySize = fsize - sizeof(header) - header.numCharsComp;
+    fread(byteTopology, topologySize, 1, inptr);
+    fread(compressedEncoding, header.numCharsComp, 1, inptr);
 
-    parseByteEncoding(byteEncoding, strEncoding, header.numCharsTopology);
+    parseByteTopology(byteTopology, stringTopology, header.numCharsTopology);
 
     // DEBUG
     printf("numCharsComp: %li, numCharsTopology: %li, numCharsUncomp: %li\n",
         header.numCharsComp, header.numCharsTopology, header.numCharsUncomp);
-    printf("Byte encoding: %s\n", byteEncoding);
-    printf("Byte encoding length: %lu\n", strlen(byteEncoding));
-    printf("String encoding: %s\n", strEncoding);
-    printf("String encoding length: %lu\n", strlen(strEncoding));
-    printf("Path encoding: %s\n", pathEncoding);
-    printf("Path encoding length: %lu\n", strlen(pathEncoding));
+    printf("Byte topology size: %li\n", topologySize);
 
-    int k = 0;
-    unsigned char ch;
-    while ((ch = pathEncoding[k]) != '\0') {
-        printf("%x", ch);
-        k++;
-    }
-    printf("\n");
+    // int k = 0;
+    // unsigned char ch;
+    // while ((ch = byteTopology[k]) != '\0') {
+    //     printf("%x", ch);
+    //     k++;
+    // }
+    // printf("\n");
+
+    // printf("Byte topology: %s\n", byteTopology);
+    printf("String topology size: %li\n", strlen(stringTopology));
+    printf("String topology: %s\n", stringTopology);
+
+    // k = 0;
+    // while ((ch = compressedEncoding[k]) != '\0') {
+    //     printf("%x", ch);
+    //     k++;
+    // }
+    // printf("\n");
 
     int i = 0;
     int numCharsPut = 0;
-    root = (Node*)malloc(1 * sizeof(Node));
+    root = (Node*)malloc(sizeof(Node));
     initNode(root);
-    buildTreeFromEncoding(root, strEncoding, &i, header.numCharsTopology, &numCharsPut);
+    buildTreeFromTopology(root, stringTopology, &i, header.numCharsTopology, &numCharsPut);
 
-    preOrderPrint(root);
+    // preOrderPrint(root);
 
-    if (decompress(output, root, pathEncoding, header.numCharsUncomp) != ENCODE_SUCCESS) {
+    if (decompress(output, root, compressedEncoding, header.numCharsUncomp) != ENCODE_SUCCESS) {
         printf("Error: Could not decompress file\n");
         return ENCODE_FAILURE;
     }
@@ -71,28 +76,29 @@ int decode(char* input, char* output) {
     return ENCODE_SUCCESS;
 }
 
-void buildTreeFromEncoding(Node* node, unsigned char* encoding, int* i, long int numCharsTopology, int* numCharsPut) {
+void buildTreeFromTopology(Node* node, char* topology, int* i, long int numCharsTopology, int* numCharsPut) {
     // Preorder: Visit root, visit left, visit right
-    if (*numCharsPut == numCharsTopology) {
-        printf("Returning from buildTreeFromEncoding\n");
+    if (!node || *numCharsPut == numCharsTopology) {
         return;
     }
-
-    if (encoding[*i] == '0') {
-        node->left = (Node*)malloc(1 * sizeof(Node));
-        initNode(node->left);
-        (*i)++;
-        buildTreeFromEncoding(node->left, encoding, i, numCharsTopology, numCharsPut);
-        node->right = (Node*)malloc(1 * sizeof(Node));
-        initNode(node->right);
-        (*i)++;
-        buildTreeFromEncoding(node->right, encoding, i, numCharsTopology, numCharsPut);
-    }
-    else if (encoding[*i] == '1') {
-        node->c = encoding[*i + 1];
+    
+    if (topology[*i] == '1') {
+        // printf("putting %c %d into tree\n", topology[*i + 1], (int)topology[*i + 1]);
+        node->c = topology[*i + 1];
         (*i)++;
         (*numCharsPut)++;
+        return;
     }
+    
+    node->left = (Node*)malloc(sizeof(Node));
+    initNode(node->left);
+    (*i)++;
+    buildTreeFromTopology(node->left, topology, i, numCharsTopology, numCharsPut);
+
+    node->right = (Node*)malloc(sizeof(Node));
+    initNode(node->right);
+    (*i)++;
+    buildTreeFromTopology(node->right, topology, i, numCharsTopology, numCharsPut);
 
     return;
 }
@@ -106,66 +112,57 @@ void initNode(Node* node) {
 }
 
 
-void parseByteEncoding(unsigned char* byteEncoding, unsigned char* strEncoding, long int numCharsTopology) {
+void parseByteTopology(unsigned char* byteTopology, char* stringTopology, long int numCharsTopology) {
     int bit = 0;
-    int charBit = 0;
-    int charFlag = 0;
-    int numCharsPut = 0;
+    int charsPut = 0;
     int i = 0;
     int j = 0;
-    const char zero = '0';
-    const char one = '1';
     const unsigned char masks[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
     unsigned char byte = 0x00;
+    unsigned char bitByte = 0x00;
     unsigned char charByte = 0x00;
 
-    while (numCharsPut != numCharsTopology) {
-        while (bit < 8) {
-            byte = byteEncoding[i];
-            if (charFlag) {
-                byte <<= charBit;
-                charByte |= byte;
-                bit += (7 - charBit);
-                charBit = 8;
-                charFlag = 0;
-            }
-            else {
-                byte &= masks[bit];
-                byte >>= bit;
+    // This loop will process bytes until an entire char has been written
+    while (charsPut != numCharsTopology) {
+        if (bit == 8) {
+            bit = 0;
+            i++;
+        }
+        // printf("\nbeginning bit: %d\n", bit);
+        byte = byteTopology[i];
+        // printf("byte: %x\n", byte);
 
-                if (byte == 0x00) {
-                    strEncoding[j++] = zero;
-                }
-                else if (byte == 0x01) {
-                    strEncoding[j++] = one;
-                    
-                    // New char
-                    charFlag = 1;
-                    byte = byteEncoding[i];
-                    charByte = (byte >> (bit + 1));
-                    charBit = (7 - bit);
-                    bit = 7;
-                }
-            }
+        bitByte = byte & masks[bit];
+        bitByte >>= bit;
+        bit++;
 
-            if (charBit == 8) {
-                printf("putting: %c\n", charByte);
-                strEncoding[j++] = charByte;
-                numCharsPut++;
-                charBit = 0;
-                charByte = 0x00;
+        while (bitByte == 0x00) {
+            if (bit == 8) {
+                bit = 0;
+                i++;
+                byte = byteTopology[i];
             }
-
-            if (numCharsPut == numCharsTopology) {
-                printf("returning\n");
-                return;
-            }
-
+            stringTopology[j++] = '0';
+            bitByte = byte & masks[bit];
+            bitByte >>= bit;
             bit++;
         }
 
-        bit = 0;
+        // A 1 was encountered, now read in 8 bits to charByte
+        stringTopology[j++] = '1';
+        // printf("charByte bit: %d\n", bit); 
+        charByte = byte >> bit;
         i++;
+        byte = byteTopology[i];
+        charByte |= byte << (8 - bit);
+        // printf("charByte %c %x, bit: %d\n", charByte, charByte, bit);
+
+        stringTopology[j++] = charByte;
+        charsPut++;
+        printf("charsPut: %d charByte: %c\n", charsPut, charByte);
+        charByte = 0x00;
+        bitByte = 0x00;
+
     }
 }
 
