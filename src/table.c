@@ -1,6 +1,7 @@
 #include "header.h"
 #include "encode.h"
 
+// Inits the table, which is an array of char arrays
 void initTable(char** table) {
    int i = 0;
    for (i = 0; i < ASCII_SIZE; i++) {
@@ -8,40 +9,35 @@ void initTable(char** table) {
    }
 }
 
-int buildTableFromTree(Node* root, char** table, Header* header, char* output) {
-    char encoding[ENCODING_SIZE];
-    char gather[GATHER_SIZE];
-    int add = 0;
-    FILE* outptr = NULL;
+// This function is more of a wrapper for the preOrderTraversal function
+int buildTableFromTree(Node* root, char** table, char* topology, Header* header, int* asciiCount) {
+    /*
+    Can do this iteratively
+    Keep searching the tree until all leaf nodes have been hit, which the count is stored in header
+    Must track the current size and previous nodes via a heap
+    Will use the linked list struct to create a heap
+    Do a PreOrderTraversal of the tree, using the heap as a way to keep track of previously visited nodes
+    When going left, concatenate a '0', right concatenate a '1'
+    When a leaf node is visited, place that code in the table at the location of the (int)char in leaf node
+    */
 
-    memset(encoding, 0, ENCODING_SIZE);
-    memset(gather, 0, GATHER_SIZE);
-
-    preOrderTraversal(root, encoding, gather, table, &header->numCharsComp);
-    if (header->numCharsComp % 8 != 0)
-        add = 1;
-    header->numCharsComp = ((header->numCharsComp - header->numCharsTopology) / 8) + header->numCharsTopology + add;
-
-    if ((outptr = fopen(output, "w+")) == NULL) {
-        printf("Error: Unable to open file %s.\n", output);
-        return ENCODE_FAILURE;
-    }
-    fwrite(header, sizeof(Header), 1, outptr);
-    fclose(outptr);
-
-    // DEBUG
-    // printf("\nENCODING\n");
-    // printf("%s\n", encoding);
+    /* 
+    But can also do this recursively, which honestly is more natural for a tree traversal
+    PreOrderTraversal goes root, left, right
+    If at leaf node, copy the string encoding to the corresponding place in the table of the int value of the char in the leaf node
+    If encountered a leaf node, concatenate a '1' and then the char
+    If encountered a non-leaf node, concatenate a '0'
+    */
     
-    if ((writeEncoding(encoding, output)) == ENCODE_FAILURE) {
-        printf("Error: Unable to write encoding.\n");
-        return ENCODE_FAILURE;
-    }
+    char gather[GATHER_SIZE];   // Memory space for gathering the huffman code string
+    int gatherSize = 0;         // Start the gather size of the string at 0
+    int topologySize = 0;       // Start the topology size of the string at 0
 
-    // DEBUG
-    // printf("\nTABLE\n\n");
-    // printTable(table);
+    
+    memset(gather, 0, GATHER_SIZE * sizeof(char));
 
+    preOrderTraversal(root, gather, &gatherSize, table, topology, &topologySize, asciiCount, &header->numCharsComp);
+  
     return ENCODE_SUCCESS;
 }
 
