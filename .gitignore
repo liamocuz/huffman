@@ -9,9 +9,9 @@
 
 # Ignore list
 *.o
-*.d
 .DS_Store
 .idea
+.vscode
 output/
 tests/
 
