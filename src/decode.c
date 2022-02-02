@@ -55,7 +55,7 @@ int decode(char* input, char* output) {
 
     // Decompress the compressed text and write it to the output file
     if (decompress(input, sizeof(header) + topologySize, output, root, header.numCharsUncomp) != ENCODE_SUCCESS) {
-        printf("Error: Could not decompress file\n");
+        printf("Error: Could not decompress file.\n");
         return ENCODE_FAILURE;
     }
 
