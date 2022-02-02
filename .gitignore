@@ -14,6 +14,7 @@
 .vscode
 output/
 tests/
+TODO.md
 
 # Unignore list
 !Makefile
