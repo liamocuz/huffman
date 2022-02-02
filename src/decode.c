@@ -1,6 +1,6 @@
 #include "huffman.h"
 
-int decode(char* input, char* output) {
+int decompress(char* input, char* output) {
     Header header;                                          // Header struct to store header info at beginning of input file
     Node* root = NULL;                                      // Root of the huffman tree to be constructed
     FILE* inptr = NULL;                                     // File pointer of input file
@@ -54,7 +54,7 @@ int decode(char* input, char* output) {
     buildTreeFromTopology(root, stringTopology, &i, header.numCharsTopology, &numCharsPut);
 
     // Decompress the compressed text and write it to the output file
-    if (decompress(input, sizeof(header) + topologySize, output, root, header.numCharsUncomp) != ENCODE_SUCCESS) {
+    if (decompressFile(input, sizeof(header) + topologySize, output, root, header.numCharsUncomp) != ENCODE_SUCCESS) {
         printf("Error: Could not decompress file.\n");
         return ENCODE_FAILURE;
     }
@@ -152,7 +152,7 @@ void initNode(Node* node) {
 }
 
 // Decompresses the compressed characters from encoding and writes to the output file
-int decompress(char* input, int offset, char* output, Node* root, long int numCharsUncomp) {
+int decompressFile(char* input, int offset, char* output, Node* root, long int numCharsUncomp) {
     FILE* inptr = NULL;             // Input file pointer
     FILE* outptr = NULL;            // Output file pointer
     Node* node = root;              // Node to traverse the tree from root

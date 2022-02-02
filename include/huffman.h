@@ -52,9 +52,9 @@ int writeTopology(char* topology, char* output);
 int compressFile(char* infile, char* outfile, char** table);
 
 // Decoding Function Definitions
-int decode(char* input, char* output);
+int decompress(char* input, char* output);
 void parseByteTopology(unsigned char* byteTopology, char* stringTopology, long int numCharsTopology);
-int decompress(char* input, int offset, char* output, Node* root, long int numCharsUncomp);
+int decompressFile(char* input, int offset, char* output, Node* root, long int numCharsUncomp);
 void buildTreeFromTopology(Node* root, char* topology, int* i, long int numCharsTopology, int* numCharsPut);
 void initNode(Node* node);
 

@@ -21,7 +21,7 @@ int main (int argc, char** argv) {
         }
     }
     else if (mode == 1) {
-        if (decode(input, output) == ENCODE_FAILURE) {
+        if (decompress(input, output) == ENCODE_FAILURE) {
             printf("Exiting!\n");
             return EXIT_FAILURE;
         }
