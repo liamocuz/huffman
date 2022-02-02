@@ -1,10 +1,9 @@
-#include "header.h"
-#include "encode.h"
+#include "huffman.h"
 
 int main (int argc, char** argv) {
     int mode = -1;
-    char* input;
-    char* output;
+    char* input = NULL;
+    char* output = NULL;
 
     if (argc != 4) {
         printf("Usage: <mode: 0 for compression, 1 for decompression> <input file> <output file>\n");
@@ -15,7 +14,6 @@ int main (int argc, char** argv) {
     input = argv[2];
     output = argv[3];
 
-    // Compress the first file and store it in the second file
     if (mode == 0) {
         if (compress(input, output) == ENCODE_FAILURE) {
             printf("Exiting!\n");
