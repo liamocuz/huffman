@@ -16,6 +16,8 @@ Read more about it [here on Wikipedia](https://en.wikipedia.org/wiki/Huffman_cod
 
 A Makefile has been provided to compile the executable that should work for Unix-based systems. Run "make" and the "huffman" exectuable will be generated. This program will only work with text files where every character in it is an ASCII character. If not, the program will exit. Given a mode (0 for compression, 1 for decompression), an input file, and an output file, the program will compress or decompress the input file and place the modified file at the output file location.
 
+A small python script "ascii.py" has been provided that can be used to check if a text file is pure ASCII and if it is not, it will show which lines and which characters are not ASCII.
+
 ## Performance
 
 Huffman coding is not the most efficient nor optimal compression algorithm as much better algorithms have been created since its inception in the early 1950s. However, it still does lossless compression nicely.
@@ -44,13 +46,14 @@ Some things that I think I did well:
 
 Some things that I think I could've done better:
 
-- Better bounds checking, EOF checking, and NULL value checking
-  - I was having issues with fgetc and gave up of checking for EOF while decompressing
+- Better error checking
+  - Bounds checking, EOF checking, NULL value checking, etc.
+  - I was having issues with fgetc and gave up on checking for EOF while decompressing
   - I think my attempt to do this with ENCODE_SUCCESS/FAILURE was pretty good though
-- I think I could've had a better structure with different source files. I feel that I put too much in the encode.c file and could've instead put some of those functions in a different file
+- I think I could've had a better project structure with different source files. I feel that I put too much in the encode.c file and could've instead put some of those functions in a different file
 - A similar thing could maybe be said for the single header file, but overall it was a small project so no file was too long
 - Perhaps in the future, I could refactor this code to also work for UTF-8 characters instead of just ASCII
 
 ## Final Remarks
 
-I enjoyed doing this assignment again as I always love working with C. It was a good challenge and I was able to a couple different data structures to solve this problem which made it more fun.
+I enjoyed doing this assignment again as I always love working with C and it was cool coming back to redo a project that I did poorly on the first time. It was a good challenge and I am glad I was able to utilize different data structures to solve this problem which made it more fun.
