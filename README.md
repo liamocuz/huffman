@@ -2,7 +2,7 @@
 
 This is a repo for a lab assignment that I had in ECE368 at Purdue my Sophomore year with Professor Koh. I remember not doing so hot on it my first time, so as I was cleaning out my notebooks after graduation, the assignment fell out and so I thought I should try it again with more knowledge and experience in C. The assignment can be found in Assignment.pdf.
 
-Upon finishing this assignment, I am pleased at how it performs. It is able to compress and decompress ASCII files of varying sizes with losslessly with speed and low memory usage (although I am sure there are optimizations that can happen). It does not follow all of the functionality that is listed out in the assignment as I just wanted it to be able to compress a file and decompress a file. Given a mode (0 for compression, 1 for decompression), an input file, and an output file, the programm will attempt to compress or decompress the input file and place the modified file at the output file location.
+Upon finishing this assignment, I am pleased at how it performs. It is able to compress and decompress ASCII files of varying sizes with losslessly with speed and low memory usage (although I am sure there are optimizations that can happen). It does not follow all of the functionality that is listed out in the assignment as I just wanted it to be able to compress a file and decompress a file.
 
 ## Overview
 
@@ -11,6 +11,10 @@ Huffman Coding is a type of text compression algorithm that uses the occurence o
 Decompression is done by recreating the tree from a pre-order traversal that is also stored in header information. Reading through the compressed text, when a 0 is read, go left in the tree and when a 1 is read, go right in the tree. When a leaf node is encountered, print the character in that leaf node and then restart from the root and do it again until all characters have been decompressed.
 
 Read more about it [here on Wikipedia](https://en.wikipedia.org/wiki/Huffman_coding).
+
+## How to Use
+
+A Makefile has been provided to compile the executable that should work for Unix-based systems. Run "make" and the "huffman" exectuable will be generated. This program will only work with text files where every character in it is an ASCII character. If not, the program will exit. Given a mode (0 for compression, 1 for decompression), an input file, and an output file, the program will compress or decompress the input file and place the modified file at the output file location.
 
 ## Performance
 
@@ -47,6 +51,6 @@ Some things that I think I could've done better:
 - A similar thing could maybe be said for the single header file, but overall it was a small project so no file was too long
 - Perhaps in the future, I could refactor this code to also work for UTF-8 characters instead of just ASCII
 
-## Final Remark
+## Final Remarks
 
 I enjoyed doing this assignment again as I always love working with C. It was a good challenge and I was able to a couple different data structures to solve this problem which made it more fun.
