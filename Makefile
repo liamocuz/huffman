@@ -40,6 +40,6 @@ leaks:
 
 clean:
 	rm $(EXE)
-	cd build; rm *.o;
-	cd output/compression; rm *;
-	cd output/decompression; rm *;
+	rm build/*.o;
+	rm output/compression/*;
+	rm output/decompression/*;
