@@ -28,7 +28,7 @@ int decompress(char* input, char* output) {
     fseek(inptr, 0, SEEK_SET);
     
     // Dynamically allocate memory and read in to memory from file 
-    if (fread(&header, sizeof(header), 1, inptr) != sizeof(header)) {
+    if (fread(&header, sizeof(header), 1, inptr) != 1) {
         printf("Error: Did not read in correct amount of bytes.\n");
         return ENCODE_FAILURE;
     }
@@ -39,7 +39,7 @@ int decompress(char* input, char* output) {
         printf("Error: Unable to allocate memory.\n");
         return ENCODE_FAILURE;
     }
-    if (fread(byteTopology, topologySize, 1, inptr) != topologySize) {
+    if (fread(byteTopology, topologySize, 1, inptr) != 1) {
         printf("Error: Did not read in correct amount of bytes.\n");
         return ENCODE_FAILURE;
     }

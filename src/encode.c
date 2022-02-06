@@ -292,7 +292,7 @@ int writeHeader(Header* header, char* outFile) {
         return ENCODE_FAILURE;
     }
 
-    if (fwrite(header, sizeof(*header), 1, outptr) != sizeof(*header)) {
+    if (fwrite(header, sizeof(*header), 1, outptr) != 1) {
         printf("Error: Did not write correct amount of bytes.\n");
         return ENCODE_FAILURE;
     }
