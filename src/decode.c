@@ -28,7 +28,10 @@ int decompress(char* input, char* output) {
     fseek(inptr, 0, SEEK_SET);
     
     // Dynamically allocate memory and read in to memory from file 
-    fread(&header, sizeof(header), 1, inptr);
+    if (fread(&header, sizeof(header), 1, inptr) != sizeof(header)) {
+        printf("Error: Did not read in correct amount of bytes.\n");
+        return ENCODE_FAILURE;
+    }
     topologySize = fsize - sizeof(header) - header.numCharsComp;
 
     byteTopology = (unsigned char*)malloc(topologySize * sizeof(unsigned char));
@@ -36,7 +39,10 @@ int decompress(char* input, char* output) {
         printf("Error: Unable to allocate memory.\n");
         return ENCODE_FAILURE;
     }
-    fread(byteTopology, topologySize, 1, inptr);
+    if (fread(byteTopology, topologySize, 1, inptr) != topologySize) {
+        printf("Error: Did not read in correct amount of bytes.\n");
+        return ENCODE_FAILURE;
+    }
 
     stringTopology = (char*)malloc(8 * topologySize * sizeof(char));
     if (stringTopology == NULL) {

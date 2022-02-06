@@ -46,10 +46,11 @@ Some things that I think I did well:
 
 Some things that I think I could've done better:
 
-- Better error checking
+- Better error checking and handling
   - Bounds checking, EOF checking, NULL value checking, etc.
   - I was having issues with fgetc and gave up on checking for EOF while decompressing
   - I think my attempt to do this with ENCODE_SUCCESS/FAILURE was pretty good though
+  - Maybe I should've written to stderr instead out stdout with simply saying error
 - I think I could've had a better project structure with different source files. I feel that I put too much in the encode.c file and could've instead put some of those functions in a different file
 - A similar thing could maybe be said for the single header file, but overall it was a small project so no file was too long
 - Perhaps in the future, I could refactor this code to also work for UTF-8 characters instead of just ASCII
